@@ -51,9 +51,6 @@
         let getId = getParam.split('=')[1]
 
         function showDetail() {
-            // let getParam = window.location.search;
-            // let getId = getParam.split('=')[1]
-
             $.ajax({
                 type: "GET",
                 url: `/api/posts/${getId}`,
@@ -83,16 +80,24 @@
                     $('#post').append(tempHtml);
 
                     if (comments.length !== 0) {
-                        for (i = 0; i < comments.length; i++) {
-                            console.log(comments[i])
-                            console.log(comments[i].id)
-                            console.log(comments[i]['id'])
-                            let tempHtml = `<div class="row align-items-center">
-                                            <div class="col-md-2 text-center pt-3" style="line-height: 1"><p>${comments[i].username}</p></div>
-                                            <div class="col-md-10 text-left pt-3" style="line-height: 1"><p>${comments[i].contents}</p></div>
-                                            <button onclick="updateComment(${comments[i].id})">수정</button><button onclick="deleteComment(${comments[i].id})">삭제</button>
-                                        </div>`
+                        for (i = comments.length - 1; i >= 0; i--) {
+                            let tempHtml = `<div id="see-area${comments[i].id}">
+                                                <div class="row align-items-center">
+                                                    <div class="col-md-2 text-center pt-3" style="line-height: 1"><p>${comments[i].username}</p></div>
+                                                    <div class="col-md-10 text-left pt-3" style="line-height: 1"><p>${comments[i].contents}</p></div>
+                                                    <button class="btn" onclick="showEdit(${comments[i].id})">수정</button><button class="btn" onclick="deleteComment(${comments[i].id})">삭제</button>
+                                                </div>
+                                            </div>
+                                            <div id="edit-area${comments[i].id}" style="display: none">
+                                                <div class="row align-items-center">
+                                                    <input class="col-md-2 text-center" type="text" id="username${comments[i].id}" name="username${comments[i].id}" maxlength="10">
+                                                    <input class="col-md-8 text-left" type="text" id="contents${comments[i].id}" name="contents${comments[i].id}" maxlength="200">
+                                                    <button class="btn" onclick="updateComment(${comments[i].id})">수정완료</button><button class="btn" onclick="closeEdit(${comments[i].id})">취소</button>
+                                                </div>
+                                            </div>`
                             $('#comment').append(tempHtml);
+                            $(`input[name=username${comments[i].id}]`).attr('value', comments[i].username)
+                            $(`input[name=contents${comments[i].id}]`).attr('value', comments[i].contents)
                         }
                     }
                 }
@@ -115,8 +120,8 @@
         }
 
         function submitComment() {
-            let username = $('#username').val()
-            let contents = $('#contents').val()
+            let username = $('#form-username').val()
+            let contents = $('#form-contents').val()
 
             if (contents == '' || username == '') {
                 alert('댓글 내용을 입력해주세요');
@@ -135,7 +140,7 @@
             })
         }
 
-        function deleteComment(id){
+        function deleteComment(id) {
             $.ajax({
                 type: "DELETE",
                 url: `/api/comments/${id}`,
@@ -146,7 +151,19 @@
             })
         }
 
-        function updateComment(id){
+        function showEdit(id) {
+            $(`#see-area${id}`).hide()
+            $(`#edit-area${id}`).show()
+        }
+
+        function closeEdit(id) {
+            $(`#see-area${id}`).show()
+            $(`#edit-area${id}`).hide()
+        }
+
+        function updateComment(id) {
+            let username = $(`#username${id}`).val()
+            let contents = $(`#contents${id}`).val()
             $.ajax({
                 type: "PUT",
                 url: `/api/comments/${id}`,
@@ -171,12 +188,13 @@
     </div>
     <div>
         <div class="form-group">
-            <label for="username">작성자</label>
-            <input type="text" class="form-control" id="username" name="username" style="width: 150px">
-            <label for="contents">내용</label>
-            <textarea class="form-control" rows="1" id="contents" style="width: 500px"></textarea>
+            <label for="form-username">작성자</label>
+            <input type="text" class="form-control" id="form-username" name="form-username" style="width: 150px"
+                   maxlength="10">
+            <label for="form-contents">내용</label>
+            <textarea class="form-control" rows="1" id="form-contents" style="width: 500px" maxlength="200"></textarea>
         </div>
-        <button onclick="submitComment()" class="btn btn-default">등록</button>
+        <button onclick="submitComment()" class="btn-primary btn-default">등록</button>
 
     </div>
     <div id="comment" style="width: 1000px">

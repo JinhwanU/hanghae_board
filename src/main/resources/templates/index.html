@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
 <head>
     <!-- Required meta tags -->
     <meta charset="utf-8">
@@ -79,7 +79,8 @@
         function openPost(id) {
             window.location.href = "post?id=" + id;
         }
-        function createPost(){
+
+        function createPost() {
             window.location.href = "create"
         }
     </script>
@@ -106,7 +107,7 @@
         <tbody id="body-container">
         </tbody>
     </table>
-    <button onclick="createPost()">게시글 작성</button>
+    <button class="btn" onclick="createPost()">게시글 작성</button>
 </div>
 </body>
 </html>
